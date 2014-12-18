@@ -187,7 +187,7 @@ abstract class Controller extends AbstractController {
         // On définit la liste des espaces de noms dans laquelle la vue peut se trouver.
         $namespaces = array(
             $app->get('app_namespace'),
-            '\\EtdSolutions\\Framework'
+            '\\EtdSolutions'
         );
 
         $className = "";
