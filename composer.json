@@ -19,10 +19,10 @@
     "joomla/input": "~1.0",
     "joomla/language": "~1.0",
     "joomla/utilities": "~1.0",
-    "etdsolutions/application": "dev-master",
-    "etdsolutions/model": "dev-master",
-    "etdsolutions/table": "dev-master",
-    "etdsolutions/user": "dev-master"
+    "etdsolutions/application": "@dev",
+    "etdsolutions/model": "@dev",
+    "etdsolutions/table": "@dev",
+    "etdsolutions/user": "@dev"
   },
   "autoload": {
     "psr-4": {
