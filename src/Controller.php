@@ -105,7 +105,7 @@ abstract class Controller extends AbstractController {
         $this->tasks = array();
 
         // Determine the methods to exclude from the base class.
-        $xMethods = get_class_methods('EtdSolutions\Framework\Controller\Controller');
+        $xMethods = get_class_methods(__CLASS__);
 
         // Get the public methods in this class using reflection.
         $r        = new \ReflectionClass($this);
