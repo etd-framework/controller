@@ -1,8 +1,8 @@
 {
-  "name": "etdsolutions/application",
+  "name": "etdsolutions/controller",
   "type": "etd-package",
-  "description": "Package Application du Framework ETD",
-  "homepage": "https://github.com/etd-framework/application",
+  "description": "Package Controller du Framework ETD",
+  "homepage": "https://github.com/etd-framework/controller",
   "license": "Apache-2.0",
   "authors": [
     {
@@ -26,7 +26,7 @@
   },
   "autoload": {
     "psr-4": {
-      "EtdSolutions\\Application\\": "src/"
+      "EtdSolutions\\Controller\\": "src/"
     }
   }
 }
