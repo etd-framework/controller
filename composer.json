@@ -1,6 +1,7 @@
 {
   "name": "etdsolutions/controller",
   "type": "etd-package",
+  "minimum-stability": "dev",
   "description": "Package Controller du Framework ETD",
   "homepage": "https://github.com/etd-framework/controller",
   "license": "Apache-2.0",
