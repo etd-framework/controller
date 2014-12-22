@@ -13,6 +13,11 @@ defined('_JEXEC') or die;
 
 class ErrorController extends Controller {
 
+    /**
+     * @var bool Si True, le controller supporte les requêtes SSL.
+     */
+    protected $ssl_enabled = false;
+
     public function display($view = null) {
 
         return $this->renderView($view);

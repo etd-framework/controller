@@ -75,6 +75,11 @@ abstract class Controller extends AbstractController {
     protected $layout;
 
     /**
+     * @var bool Si True, le controller supporte les requêtes SSL.
+     */
+    protected $ssl_enabled = true;
+
+    /**
      * Instancie le controller.
      *
      * @param   Input               $input The input object.
@@ -357,6 +362,10 @@ abstract class Controller extends AbstractController {
 
         return Model::getInstance($model, $ignore_request);
 
+    }
+
+    public function isSSLEnabled() {
+        return $this->ssl_enabled;
     }
 
 }
