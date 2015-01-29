@@ -176,7 +176,8 @@ abstract class Controller extends AbstractController {
         if ($app->get('lock_display', true)) {
             $user = User::getInstance();
             if ($user->isGuest()) {
-                $this->redirect('/login', Text::_('APP_ERROR_MUST_BE_LOGGED'), 'warning');
+                $this->redirect('/login', $this->getApplication()
+                                               ->translate('APP_ERROR_MUST_BE_LOGGED'), 'warning');
             }
         }
 
@@ -322,6 +323,7 @@ abstract class Controller extends AbstractController {
      * @param string $layout Le layout.
      */
     public function setLayout($layout) {
+
         $this->layout = $layout;
     }
 
@@ -365,6 +367,7 @@ abstract class Controller extends AbstractController {
     }
 
     public function isSSLEnabled() {
+
         return $this->ssl_enabled;
     }
 

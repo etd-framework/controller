@@ -104,7 +104,8 @@ class ItemController extends Controller {
 
         // On contrôle les droits.
         if (!$this->allowAdd()) {
-            $this->redirect("/" . $this->listRoute, Text::_('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
         }
 
         // On passe en layout de création (form).
@@ -128,7 +129,8 @@ class ItemController extends Controller {
 
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, Text::_('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -142,7 +144,8 @@ class ItemController extends Controller {
 
         // On contrôle les droits.
         if (!$this->allowEdit($id)) {
-            $this->redirect("/" . $this->listRoute, Text::_('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
         }
 
         // On passe en layout de création (form).
@@ -165,7 +168,8 @@ class ItemController extends Controller {
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError(Text::_('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($this->getApplication()
+                                  ->translate('APP_ERROR_INVALID_TOKEN', 403));
         }
 
         // On récupère les identifiants
@@ -174,7 +178,8 @@ class ItemController extends Controller {
 
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, Text::_('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -185,12 +190,11 @@ class ItemController extends Controller {
         // On s'assure que ce sont bien des integers.
         $id = ArrayHelper::toInteger($id);
 
-
         // On effectue la suppression.
         if ($model->delete($id)) {
 
             // La suppresion s'est faite avec succès.
-            $this->redirect("/" . $this->listRoute, Text::plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DELETED', count($id)), 'success');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DELETED', count($id)), 'success');
 
         } else {
 
@@ -202,7 +206,6 @@ class ItemController extends Controller {
 
     }
 
-
     /**
      * Méthode pour sauver un enregistrement.
      */
@@ -213,7 +216,8 @@ class ItemController extends Controller {
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError(Text::_('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($this->getApplication()
+                                  ->translate('APP_ERROR_INVALID_TOKEN', 403));
         }
 
         /**
@@ -226,7 +230,8 @@ class ItemController extends Controller {
 
         // Contrôle d'accès.
         if (!$this->allowSave($recordId)) {
-            $this->redirect("/" . $this->listRoute, Text::_('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
 
             return false;
         }
@@ -269,7 +274,7 @@ class ItemController extends Controller {
             $app->setUserState($this->context . '.edit.data', $data);
 
             // on renvoie vers le formulaire.
-            $this->redirect("/" . $this->itemRoute . $this->getRedirectToItemAppend($recordId), Text::sprintf('APP_ERROR_CTRL_SAVE_FAILED', $model->getError()), 'error');
+            $this->redirect("/" . $this->itemRoute . $this->getRedirectToItemAppend($recordId), $this->getApplication()->sprintf('APP_ERROR_CTRL_SAVE_FAILED', $model->getError()), 'error');
 
             return false;
 
@@ -282,7 +287,8 @@ class ItemController extends Controller {
         $app->setUserState($this->context . '.edit.data', null);
 
         // On redirige vers la page de listing.
-        $this->redirect("/" . $this->listRoute, Text::_('CTRL_' . strtoupper($this->getName()) . '_SAVE_SUCCESS'), 'success');
+        $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                     ->translate('CTRL_' . strtoupper($this->getName()) . '_SAVE_SUCCESS'), 'success');
 
         return true;
 
@@ -311,7 +317,8 @@ class ItemController extends Controller {
 
         // On contrôle les droits.
         if (!$this->allowView()) {
-            $this->redirect("/" . $this->listRoute, Text::_('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
         }
 
         // On nettoie les informations d'édition de l'enregistrement dans la session.
@@ -335,7 +342,8 @@ class ItemController extends Controller {
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError(Text::_('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($this->getApplication()
+                                  ->translate('APP_ERROR_INVALID_TOKEN', 403));
         }
 
         $model = $this->getModel();
@@ -344,7 +352,8 @@ class ItemController extends Controller {
 
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, Text::_('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -356,7 +365,7 @@ class ItemController extends Controller {
         if ($model->duplicate($id)) {
 
             // La suppresion s'est faite avec succès.
-            $this->redirect("/" . $this->listRoute, Text::plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DUPLICATED', count($id)), 'success');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DUPLICATED', count($id)), 'success');
 
         } else {
 
@@ -380,7 +389,8 @@ class ItemController extends Controller {
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError(Text::_('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($this->getApplication()
+                                  ->translate('APP_ERROR_INVALID_TOKEN', 403));
         }
 
         $model = $this->getModel();
@@ -389,7 +399,8 @@ class ItemController extends Controller {
 
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, Text::_('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -423,7 +434,7 @@ class ItemController extends Controller {
                 $ntext .= '_N_ITEMS_TRASHED';
             }
 
-            $this->redirect("/" . $this->listRoute, Text::plural($ntext, count($id)), 'success');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()->plural($ntext, count($id)), 'success');
 
         } else {
 
@@ -449,7 +460,8 @@ class ItemController extends Controller {
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError(Text::_('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($this->getApplication()
+                                  ->translate('APP_ERROR_INVALID_TOKEN', 403));
         }
 
         $ids = $this->getInput()
@@ -461,12 +473,14 @@ class ItemController extends Controller {
 
         if ($return === false) {
             // Reorder failed.
-            $this->redirect("/" . $this->listRoute, Text::_('CTRL_' . strtoupper($this->getName()) . '_REORDER_FAILED'), 'error');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_REORDER_FAILED'), 'error');
 
             return false;
         } else {
             // Reorder succeeded.
-            $this->redirect("/" . $this->listRoute, Text::_('CTRL_' . strtoupper($this->getName()) . '_ITEM_REORDERED'), 'success');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_ITEM_REORDERED'), 'success');
 
             return true;
         }
