@@ -177,6 +177,7 @@ abstract class Controller extends AbstractController {
             $user = User::getInstance();
             if ($user->isGuest()) {
                 $this->redirect('/login', $this->getApplication()
+                                               ->getText()
                                                ->translate('APP_ERROR_MUST_BE_LOGGED'), 'warning');
             }
         }
