@@ -105,6 +105,7 @@ class ItemController extends Controller {
         // On contrôle les droits.
         if (!$this->allowAdd()) {
             $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
                                                          ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
         }
 
@@ -130,6 +131,7 @@ class ItemController extends Controller {
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
             $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
                                                          ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
@@ -145,6 +147,7 @@ class ItemController extends Controller {
         // On contrôle les droits.
         if (!$this->allowEdit($id)) {
             $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
                                                          ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
         }
 
@@ -179,6 +182,7 @@ class ItemController extends Controller {
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
             $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
                                                          ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
@@ -194,7 +198,9 @@ class ItemController extends Controller {
         if ($model->delete($id)) {
 
             // La suppresion s'est faite avec succès.
-            $this->redirect("/" . $this->listRoute, $this->getApplication()->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DELETED', count($id)), 'success');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
+                                                         ->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DELETED', count($id)), 'success');
 
         } else {
 
@@ -231,6 +237,7 @@ class ItemController extends Controller {
         // Contrôle d'accès.
         if (!$this->allowSave($recordId)) {
             $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
                                                          ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
 
             return false;
@@ -274,7 +281,8 @@ class ItemController extends Controller {
             $app->setUserState($this->context . '.edit.data', $data);
 
             // on renvoie vers le formulaire.
-            $this->redirect("/" . $this->itemRoute . $this->getRedirectToItemAppend($recordId), $this->getApplication()->sprintf('APP_ERROR_CTRL_SAVE_FAILED', $model->getError()), 'error');
+            $this->redirect("/" . $this->itemRoute . $this->getRedirectToItemAppend($recordId), $this->getApplication()
+                                                                                                     ->sprintf('APP_ERROR_CTRL_SAVE_FAILED', $model->getError()), 'error');
 
             return false;
 
@@ -288,6 +296,7 @@ class ItemController extends Controller {
 
         // On redirige vers la page de listing.
         $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                     ->getText()
                                                      ->translate('CTRL_' . strtoupper($this->getName()) . '_SAVE_SUCCESS'), 'success');
 
         return true;
@@ -318,6 +327,7 @@ class ItemController extends Controller {
         // On contrôle les droits.
         if (!$this->allowView()) {
             $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
                                                          ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
         }
 
@@ -353,6 +363,7 @@ class ItemController extends Controller {
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
             $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
                                                          ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
@@ -365,7 +376,8 @@ class ItemController extends Controller {
         if ($model->duplicate($id)) {
 
             // La suppresion s'est faite avec succès.
-            $this->redirect("/" . $this->listRoute, $this->getApplication()->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DUPLICATED', count($id)), 'success');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DUPLICATED', count($id)), 'success');
 
         } else {
 
@@ -400,6 +412,7 @@ class ItemController extends Controller {
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
             $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
                                                          ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
@@ -434,7 +447,9 @@ class ItemController extends Controller {
                 $ntext .= '_N_ITEMS_TRASHED';
             }
 
-            $this->redirect("/" . $this->listRoute, $this->getApplication()->plural($ntext, count($id)), 'success');
+            $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
+                                                         ->plural($ntext, count($id)), 'success');
 
         } else {
 
@@ -474,6 +489,7 @@ class ItemController extends Controller {
         if ($return === false) {
             // Reorder failed.
             $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
                                                          ->translate('CTRL_' . strtoupper($this->getName()) . '_REORDER_FAILED'), 'error');
 
             return false;
