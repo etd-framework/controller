@@ -377,6 +377,7 @@ class ItemController extends Controller {
 
             // La suppresion s'est faite avec succès.
             $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
                                                          ->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DUPLICATED', count($id)), 'success');
 
         } else {
@@ -496,6 +497,7 @@ class ItemController extends Controller {
         } else {
             // Reorder succeeded.
             $this->redirect("/" . $this->listRoute, $this->getApplication()
+                                                         ->getText()
                                                          ->translate('CTRL_' . strtoupper($this->getName()) . '_ITEM_REORDERED'), 'success');
 
             return true;
