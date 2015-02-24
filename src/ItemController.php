@@ -465,6 +465,58 @@ class ItemController extends Controller {
 
     }
 
+    public function ajaxPublish() {
+
+        // On initialise les variables
+        $app    = $this->getApplication();
+        $input  = $this->getInput();
+        $text   = $app->getText();
+        $result = new \stdClass();
+
+        // Bad request par défaut.
+        $result->status = 400;
+        $result->error  = true;
+
+        // On contrôle le jeton de la requête.
+        if (!$app->checkToken()) {
+            $result->status  = 403;
+            $result->message = $text->translate('APP_ERROR_INVALID_TOKEN');
+
+            return $result;
+        }
+
+        // On récupère les données.
+        $id    = $input->get('id', 0, 'uint');
+        $state = $input->get('state', 0, 'uint');
+
+        // On contrôle que les données sont correctes.
+        if (empty($id)) {
+            return $result;
+        }
+
+        $id = array($id);
+
+        // On met à jour l'état de présence.
+        $model = $this->getModel();
+
+        if (!$model->publish($id, $state)) {
+            $result->status = 500;
+            $error          = $model->getError();
+            if ($error instanceof \Exception) {
+                $error = $error->getMessage();
+            }
+            $result->message = $error;
+
+            return $result;
+        }
+
+        // Si on est ici c'est OK.
+        $result->status = 200;
+        $result->error  = false;
+
+        return $result;
+    }
+
     /**
      * Change l'ordre d'un ou plusieurs enregistrements.
      *
