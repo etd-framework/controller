@@ -282,6 +282,7 @@ class ItemController extends Controller {
 
             // on renvoie vers le formulaire.
             $this->redirect("/" . $this->itemRoute . $this->getRedirectToItemAppend($recordId), $this->getApplication()
+                                                                                                     ->getText()
                                                                                                      ->sprintf('APP_ERROR_CTRL_SAVE_FAILED', $model->getError()), 'error');
 
             return false;
