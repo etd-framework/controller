@@ -93,6 +93,9 @@ class ItemController extends Controller {
         // Ordre
         $this->registerTask('orderup', 'reorder');
         $this->registerTask('orderdown', 'reorder');
+
+        // Enregistrer & Nouveau
+        $this->registerTask('saveAndNew', 'save');
     }
 
     /**
@@ -295,10 +298,13 @@ class ItemController extends Controller {
         // On nettoie les informations d'édition de l'enregistrement dans la session.
         $app->setUserState($this->context . '.edit.data', null);
 
-        // On redirige vers la page de listing.
-        $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                     ->getText()
-                                                     ->translate('CTRL_' . strtoupper($this->getName()) . '_SAVE_SUCCESS'), 'success');
+        // On définit la bonne page suivant la tâche.
+        $redirect_uri = ($this->task == 'saveAndNew') ? $this->itemRoute . $this->getRedirectToItemAppend() : $this->listRoute;
+
+        // On redirige vers la bonne page.
+        $this->redirect("/" . $redirect_uri, $this->getApplication()
+            ->getText()
+            ->translate('CTRL_' . strtoupper($this->getName()) . '_SAVE_SUCCESS'), 'success');
 
         return true;
 
@@ -566,7 +572,7 @@ class ItemController extends Controller {
 
         $user = User::getInstance();
 
-        return ($user->authorise('add', $this->context) || $user->authorise("admin", "app"));
+        return $user->authorise($this->context, 'add');
     }
 
     /**
@@ -580,7 +586,7 @@ class ItemController extends Controller {
 
         $user = User::getInstance();
 
-        return ($user->authorise('edit', $this->context) || $user->authorise("admin", "app"));
+        return $user->authorise($this->context, 'edit');
     }
 
     /**
@@ -594,7 +600,7 @@ class ItemController extends Controller {
 
         $user = User::getInstance();
 
-        return ($user->authorise('delete', $this->context) || $user->authorise("admin", "app"));
+        return $user->authorise($this->context, 'delete');
     }
 
     /**
@@ -608,7 +614,7 @@ class ItemController extends Controller {
 
         $user = User::getInstance();
 
-        return ($user->authorise('view', $this->context) || $user->authorise("admin", "app"));
+        return $user->authorise($this->context, 'view');
     }
 
     /**
