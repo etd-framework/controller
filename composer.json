@@ -19,6 +19,7 @@
     "joomla/controller": "~1.0",
     "joomla/input": "~1.2",
     "joomla/utilities": "~1.0",
+    "joomla/di": "2.0.*@dev",
     "etdsolutions/application": "@dev",
     "etdsolutions/model": "@dev",
     "etdsolutions/table": "@dev",
