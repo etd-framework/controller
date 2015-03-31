@@ -9,17 +9,14 @@
 
 namespace EtdSolutions\Controller;
 
-use EtdSolutions\Application\Web;
+use EtdSolutions\Language\LanguageFactory;
 use EtdSolutions\Model\ItemModel;
 use EtdSolutions\Model\Model;
 use EtdSolutions\Table\Table;
-use EtdSolutions\User\User;
+use EtdSolutions\Utility\RequireJSUtility;
 use Joomla\Application\AbstractApplication;
 use Joomla\Input\Input;
-use Joomla\Language\Text;
 use Joomla\Utilities\ArrayHelper;
-
-defined('_JEXEC') or die;
 
 /**
  * Controller pour un élément.
@@ -107,9 +104,7 @@ class ItemController extends Controller {
 
         // On contrôle les droits.
         if (!$this->allowAdd()) {
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
+            $this->redirect("/" . $this->listRoute, (new LanguageFactory)->getText()->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
         }
 
         // On passe en layout de création (form).
@@ -133,9 +128,7 @@ class ItemController extends Controller {
 
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect("/" . $this->listRoute, (new LanguageFactory)->getText()->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -149,9 +142,7 @@ class ItemController extends Controller {
 
         // On contrôle les droits.
         if (!$this->allowEdit($id)) {
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
+            $this->redirect("/" . $this->listRoute, (new LanguageFactory)->getText()->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
         }
 
         // On passe en layout de création (form).
@@ -170,12 +161,12 @@ class ItemController extends Controller {
     public function delete() {
 
         // App
-        $app = Web::getInstance();
+        $app  = $this->getApplication();
+        $text = (new LanguageFactory)->getText();
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError($this->getApplication()
-                                  ->translate('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN', 403));
         }
 
         // On récupère les identifiants
@@ -184,9 +175,7 @@ class ItemController extends Controller {
 
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect("/" . $this->listRoute, $text->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -201,9 +190,7 @@ class ItemController extends Controller {
         if ($model->delete($id)) {
 
             // La suppresion s'est faite avec succès.
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DELETED', count($id)), 'success');
+            $this->redirect("/" . $this->listRoute, $text->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DELETED', count($id)), 'success');
 
         } else {
 
@@ -221,12 +208,12 @@ class ItemController extends Controller {
     public function save() {
 
         // App
-        $app = Web::getInstance();
+        $app  = $this->getApplication();
+        $text = (new LanguageFactory)->getText();
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError($this->getApplication()
-                                  ->translate('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN', 403));
         }
 
         /**
@@ -239,9 +226,7 @@ class ItemController extends Controller {
 
         // Contrôle d'accès.
         if (!$this->allowSave($recordId)) {
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
+            $this->redirect("/" . $this->listRoute, $text->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
 
             return false;
         }
@@ -284,9 +269,7 @@ class ItemController extends Controller {
             $app->setUserState($this->context . '.edit.data', $data);
 
             // on renvoie vers le formulaire.
-            $this->redirect("/" . $this->itemRoute . $this->getRedirectToItemAppend($recordId), $this->getApplication()
-                                                                                                     ->getText()
-                                                                                                     ->sprintf('APP_ERROR_CTRL_SAVE_FAILED', $model->getError()), 'error');
+            $this->redirect("/" . $this->itemRoute . $this->getRedirectToItemAppend($recordId), $text->sprintf('APP_ERROR_CTRL_SAVE_FAILED', $model->getError()), 'error');
 
             return false;
 
@@ -302,9 +285,7 @@ class ItemController extends Controller {
         $redirect_uri = ($this->task == 'saveAndNew') ? $this->itemRoute . $this->getRedirectToItemAppend() : $this->listRoute;
 
         // On redirige vers la bonne page.
-        $this->redirect("/" . $redirect_uri, $this->getApplication()
-            ->getText()
-            ->translate('CTRL_' . strtoupper($this->getName()) . '_SAVE_SUCCESS'), 'success');
+        $this->redirect("/" . $redirect_uri, $text->translate('CTRL_' . strtoupper($this->getName()) . '_SAVE_SUCCESS'), 'success');
 
         return true;
 
@@ -316,8 +297,7 @@ class ItemController extends Controller {
     public function cancel() {
 
         // On nettoie les informations d'édition de l'enregistrement dans la session.
-        Web::getInstance()
-           ->setUserState($this->context . '.edit.data', null);
+        $this->getApplication()->setUserState($this->context . '.edit.data', null);
 
         // On redirige vers la liste.
         $this->redirect("/" . $this->listRoute);
@@ -333,14 +313,11 @@ class ItemController extends Controller {
 
         // On contrôle les droits.
         if (!$this->allowView()) {
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
+            $this->redirect("/" . $this->listRoute, (new LanguageFactory)->getText()->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
         }
 
         // On nettoie les informations d'édition de l'enregistrement dans la session.
-        Web::getInstance()
-           ->setUserState($this->context . '.edit.data', null);
+        $this->getApplication()->setUserState($this->context . '.edit.data', null);
 
         //On affiche la vue
         return $this->display();
@@ -355,12 +332,12 @@ class ItemController extends Controller {
     public function duplicate() {
 
         // App
-        $app = $this->getApplication();
+        $app  = $this->getApplication();
+        $text = (new LanguageFactory)->getText();
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError($this->getApplication()
-                                  ->translate('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN', 403));
         }
 
         $model = $this->getModel();
@@ -369,9 +346,7 @@ class ItemController extends Controller {
 
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect("/" . $this->listRoute, $text->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -383,9 +358,7 @@ class ItemController extends Controller {
         if ($model->duplicate($id)) {
 
             // La suppresion s'est faite avec succès.
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DUPLICATED', count($id)), 'success');
+            $this->redirect("/" . $this->listRoute, $text->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DUPLICATED', count($id)), 'success');
 
         } else {
 
@@ -405,12 +378,12 @@ class ItemController extends Controller {
     public function publish() {
 
         // App
-        $app = $this->getApplication();
+        $app  = $this->getApplication();
+        $text = (new LanguageFactory)->getText();
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError($this->getApplication()
-                                  ->translate('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN', 403));
         }
 
         $model = $this->getModel();
@@ -419,9 +392,7 @@ class ItemController extends Controller {
 
         // Si on a aucun élément, on redirige vers la liste avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect("/" . $this->listRoute, $text->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -455,9 +426,7 @@ class ItemController extends Controller {
                 $ntext .= '_N_ITEMS_TRASHED';
             }
 
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->plural($ntext, count($id)), 'success');
+            $this->redirect("/" . $this->listRoute, $text->plural($ntext, count($id)), 'success');
 
         } else {
 
@@ -531,12 +500,12 @@ class ItemController extends Controller {
     public function reorder() {
 
         // App
-        $app = $this->getApplication();
+        $app  = $this->getApplication();
+        $text = (new LanguageFactory)->getText();
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError($this->getApplication()
-                                  ->translate('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN', 403));
         }
 
         $ids = $this->getInput()
@@ -548,19 +517,205 @@ class ItemController extends Controller {
 
         if ($return === false) {
             // Reorder failed.
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_REORDER_FAILED'), 'error');
+            $this->redirect("/" . $this->listRoute, $text->translate('CTRL_' . strtoupper($this->getName()) . '_REORDER_FAILED'), 'error');
 
             return false;
         } else {
             // Reorder succeeded.
-            $this->redirect("/" . $this->listRoute, $this->getApplication()
-                                                         ->getText()
-                                                         ->translate('CTRL_' . strtoupper($this->getName()) . '_ITEM_REORDERED'), 'success');
+            $this->redirect("/" . $this->listRoute, $text->translate('CTRL_' . strtoupper($this->getName()) . '_ITEM_REORDERED'), 'success');
 
             return true;
         }
+    }
+
+    /**
+     * Méthode pour mettre à jour la valeur d'un champ.
+     *
+     * @return array Le tableau du résultat JSON.
+     */
+    public function ajaxUpdateField() {
+
+        // App
+        $app  = $this->getApplication();
+        $text = (new LanguageFactory())->getText();
+
+        // On initialise le résultat.
+        $result = new \stdClass();
+
+        // Bad request par défaut.
+        $result->status  = 400;
+        $result->error   = true;
+        $result->message = $text->translate('APP_ERROR_BAD_REQUEST');
+
+        // On contrôle le jeton de la requête.
+        if (!$app->checkToken()) {
+            $result->message = $text->translate('APP_ERROR_INVALID_TOKEN');
+            $result->status  = 403;
+
+            return $result;
+        }
+
+        // On récupère les données.
+        $input  = $this->getInput();
+        $id     = $input->get('id', 0, 'uint');
+        $name   = $input->get('name', null, 'string');
+        $value  = $input->get('value', null, 'raw');
+
+        // Si un des paramètres est invalide, on renvoi une erreur.
+        if (empty($id) || empty($name)) {
+            return $result;
+        }
+
+        // On contrôle les droits de modification.
+        if (!$this->allowEdit($id)) {
+            $result->message = $text->translate('APP_ERROR_UNAUTHORIZED_ACTION');
+            $result->status  = 403;
+
+            return $result;
+        }
+
+        // On récupère le modèle.
+        $model = $this->getModel();
+
+        // On sépare le groupe du champ si nécessaire.
+        $group = null;
+        if (preg_match('/^([a-z_]*)\[([a-z_]*)\]$/i', $name, $matches)) {
+            $group = $matches[1];
+            $name  = $matches[2];
+        }
+
+        // On construit le tableau de données.
+        $data = ['id' => $id];
+
+        if (isset($group)) {
+            $data[$group] = [$name => $value];
+        } else {
+            $data[$name] = $value;
+        }
+
+        // On filtre les données.
+        $data = $model->filter($data);
+
+        // On valide les données.
+        $validData = $model->validateField($name, $data, $group);
+
+        if ($validData === false) {
+            $result->status = 500;
+            $error          = $model->getError();
+            if ($error instanceof \Exception) {
+                $error = $error->getMessage();
+            }
+            $result->message = $error;
+
+            return $result;
+        }
+
+        // On enregistre.
+        if (!$model->save($data)) {
+            $result->status = 500;
+            $error          = $model->getError();
+            if ($error instanceof \Exception) {
+                $error = $error->getMessage();
+            }
+            $result->message = $error;
+
+            return $result;
+        }
+
+        // Tout s'est bien passé.
+        $result->status  = 200;
+        $result->error   = false;
+        $result->message = null;
+
+        return $result;
+
+    }
+
+    /**
+     * Méthode pour récupérer le champ de formulaire associé à une propriété
+     * de l'enregistrement dans l'idée de le mettre à jour par la suite.
+     *
+     * @return array Le tableau du résultat JSON.
+     */
+    public function ajaxGetFieldInput() {
+
+        // App
+        $app  = $this->getApplication();
+        $text = (new LanguageFactory())->getText();
+
+        // On initialise le résultat.
+        $result = new \stdClass();
+
+        // Bad request par défaut.
+        $result->status  = 400;
+        $result->error   = true;
+        $result->message = $text->translate('APP_ERROR_BAD_REQUEST');
+
+        // On contrôle le jeton de la requête.
+        if (!$app->checkToken()) {
+            $result->message = $text->translate('APP_ERROR_INVALID_TOKEN');
+            $result->status  = 403;
+
+            return $result;
+        }
+
+        // On récupère les données.
+        $input = $this->getInput();
+        $id    = $input->get('id', 0, 'uint');
+        $name  = $input->get('name', null, 'string');
+
+        // Si un des paramètres est invalide, on renvoi une erreur.
+        if (empty($id) || empty($name)) {
+            return $result;
+        }
+
+        // On contrôle les droits de modification.
+        if (!$this->allowEdit($id)) {
+            $result->message = $text->translate('APP_ERROR_UNAUTHORIZED_ACTION');
+            $result->status  = 403;
+
+            return $result;
+        }
+
+        // On récupère le modèle.
+        $model = $this->getModel();
+
+        /**
+         * On récupère le formulaire.
+         * @var \EtdSolutions\Form\Form $form
+         */
+        $form = $model->getForm();
+
+        // On sépare le groupe du champ si nécessaire.
+        $group = null;
+        if (preg_match('/^([a-z_]*)\[([a-z_]*)\]$/i', $name, $matches)) {
+            $group = $matches[1];
+            $name  = $matches[2];
+        }
+
+        // On récupère le champ qui nous intéresse
+        $field = $form->getField($name, $group);
+
+        if ($field === false) {
+            $result->status  = 404;
+            $result->message = $text->sprintf('JLIB_FORM_VALIDATE_FIELD_INVALID', $name);
+            return $result;
+        }
+
+        // Tout s'est bien passé.
+        $result->status  = 200;
+        $result->error   = false;
+        $result->message = null;
+        $result->input   = $field->input;
+        $result->label   = $field->label;
+        $result->title   = $field->title;
+        $result->type    = $field->type;
+
+        // JS
+        $result->requirejs = (new RequireJSUtility())->printRequireJS($this->getApplication());
+
+        return $result;
+
     }
 
     /**
@@ -570,7 +725,7 @@ class ItemController extends Controller {
      */
     protected function allowAdd() {
 
-        $user = User::getInstance();
+        $user = $this->getContainer()->get('user')->load();
 
         return $user->authorise($this->context, 'add');
     }
@@ -584,7 +739,7 @@ class ItemController extends Controller {
      */
     protected function allowEdit($id = null) {
 
-        $user = User::getInstance();
+        $user = $this->getContainer()->get('user')->load();
 
         return $user->authorise($this->context, 'edit');
     }
@@ -598,7 +753,7 @@ class ItemController extends Controller {
      */
     protected function allowDelete($id = null) {
 
-        $user = User::getInstance();
+        $user = $this->getContainer()->get('user')->load();
 
         return $user->authorise($this->context, 'delete');
     }
@@ -612,7 +767,7 @@ class ItemController extends Controller {
      */
     protected function allowView($id = null) {
 
-        $user = User::getInstance();
+        $user = $this->getContainer()->get('user')->load();
 
         return $user->authorise($this->context, 'view');
     }
@@ -694,7 +849,13 @@ class ItemController extends Controller {
             $name = $this->getName();
         }
 
-        return Table::getInstance($name);
+        $class = APP_NAMESPACE . "\\Table\\" . ucfirst($name) . "Table";
+
+        if (!class_exists($class)) {
+            throw new \RuntimeException(sprintf("Unable to find %s table (class: %s)", $name, $class), 500);
+        }
+
+        return new $class($this->getContainer()->get('db'));
     }
 
 }

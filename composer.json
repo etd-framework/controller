@@ -15,16 +15,15 @@
   ],
   "require": {
     "php": ">=5.4",
-    "joomla/application": "~2.0@dev",
-    "joomla/controller": "~1.0",
-    "joomla/input": "~1.0",
-    "joomla/language": "~2.0@dev",
-    "joomla/utilities": "~1.0",
+    "joomla/application": "2.0.*@dev",
+    "joomla/controller": "2.0.*@dev",
+    "joomla/input": "2.0.*@dev",
+    "joomla/utilities": "2.0.*@dev",
     "etdsolutions/application": "@dev",
     "etdsolutions/model": "@dev",
     "etdsolutions/table": "@dev",
     "etdsolutions/user": "@dev",
-    "etdsolutions/view": "@dev"
+    "etdsolutions/language": "@dev"
   },
   "autoload": {
     "psr-4": {

@@ -9,20 +9,21 @@
 
 namespace EtdSolutions\Controller;
 
-use EtdSolutions\Application\Web;
-use EtdSolutions\Model\Model;
-use EtdSolutions\User\User;
+use EtdSolutions\Language\LanguageFactory;
+
+use Joomla\DI\ContainerAwareInterface;
+use Joomla\DI\ContainerAwareTrait;
 use Joomla\Input\Input;
 use Joomla\Application\AbstractApplication;
 use Joomla\Controller\AbstractController;
-use Joomla\Language\Text;
-
-defined('_JEXEC') or die;
+use Joomla\Model\ModelInterface;
 
 /**
  * Controller de base
  */
-abstract class Controller extends AbstractController {
+class Controller extends AbstractController implements ContainerAwareInterface {
+
+    use ContainerAwareTrait;
 
     /**
      * @var string Contexte
@@ -75,9 +76,9 @@ abstract class Controller extends AbstractController {
     protected $layout;
 
     /**
-     * @var bool Si True, le controller supporte les requêtes SSL.
+     * @var \Joomla\Registry\Registry Objet d'état à injecter dans le modèle.
      */
-    protected $ssl_enabled = true;
+    protected $modelState = null;
 
     /**
      * Instancie le controller.
@@ -87,20 +88,11 @@ abstract class Controller extends AbstractController {
      */
     public function __construct(Input $input = null, AbstractApplication $app = null) {
 
-        if (!isset($app)) {
-            $app = Web::getInstance();
-        }
-
-        if (!isset($input)) {
-            $input = $app->input;
-        }
-
         parent::__construct($input, $app);
 
         // On charge le fichier de langue pour le controller.
-        $lang = $this->getApplication()
-                     ->getLanguage();
-        $lang->load(strtolower($this->getName()));
+        $factory = new LanguageFactory();
+        $factory->getLanguage()->load(strtolower($this->getName()));
 
         // Le nom de la vue par défaut est pris sur celui du controller.
         $this->defaultView = $this->getName();
@@ -168,79 +160,6 @@ abstract class Controller extends AbstractController {
 
     }
 
-    public function display($view = null) {
-
-        $app = $this->getApplication();
-
-        // Si configuré, les vues ne sont disponibles qu'aux utilisateurs authentifiés.
-        if ($app->get('lock_display', true)) {
-            $user = User::getInstance();
-            if ($user->isGuest()) {
-                $this->redirect('/login', $this->getApplication()
-                                               ->getText()
-                                               ->translate('APP_ERROR_MUST_BE_LOGGED'), 'warning');
-            }
-        }
-
-        return $this->renderView($view);
-
-    }
-
-    protected function renderView($view = null) {
-
-        // On récupère l'appli.
-        $app = $this->getApplication();
-
-        // On définit la liste des espaces de noms dans laquelle la vue peut se trouver.
-        $namespaces = array(
-            $app->get('app_namespace'),
-            '\\EtdSolutions'
-        );
-
-        $className = "";
-
-        // On cherche la vue dans ces espaces de nom.
-        foreach ($namespaces as $namespace) {
-
-            // On crée le nom de la classe.
-            if (isset($view)) {
-                $className = $namespace . '\\View\\' . ucfirst($view) . 'View';
-            } elseif (isset($this->defaultView)) {
-                $className = $namespace . '\\View\\' . ucfirst($this->defaultView) . 'View';
-            } else {
-                throw new \RuntimeException("Unable to find a view", 500);
-            }
-
-            // Si on a trouvé la classe, on arrête.
-            if (class_exists($className)) {
-                break;
-            }
-
-        }
-
-        // On vérifie que l'on a bien une classe valide.
-        if (!class_exists($className)) {
-            throw new \RuntimeException("Unable to find a view", 500);
-        }
-
-        // On instancie la vue.
-        $view = new $className();
-
-        // On affecte le layout à la vue.
-        $view->setLayout($this->getLayout());
-
-        try {
-            $result = $view->render();
-        } catch (\Exception $e) {
-            $this->getApplication()
-                 ->raiseError($e->getMessage(), 404, $e);
-        }
-
-        // On retourne le rendu.
-        return $result;
-
-    }
-
     /**
      * Register the default task to perform if a mapping is not found.
      *
@@ -287,7 +206,12 @@ abstract class Controller extends AbstractController {
     }
 
     /**
-     * Redirects the browser or returns false if no redirect is set.
+     * On redirige le navigateur.
+     *
+     * @param $url
+     * @param null $msg
+     * @param null $type
+     * @return bool
      */
     public function redirect($url, $msg = null, $type = null) {
 
@@ -319,6 +243,22 @@ abstract class Controller extends AbstractController {
     }
 
     /**
+     * Méthode pour gérer la tâche "display".
+     *
+     * @param string $view Le nom de la vue à afficher.
+     * @return string Le rendu de la vue.
+     */
+    public function display($view = null) {
+
+        $view = $this->initializeView($view);
+
+        $result = $view->render();
+
+        return $result;
+
+    }
+
+    /**
      * Méthode pour définir le layout.
      *
      * @param string $layout Le layout.
@@ -346,30 +286,114 @@ abstract class Controller extends AbstractController {
     }
 
     /**
-     * Méthode pour charger un model.
+     * Méthode pour initialiser l'objet View.
      *
-     * @param string $model Le nom du modèle. Facultatif.
-     * @param bool   $ignore_request
+     * @param string $view Un nom facultatif de la vue à initialiser.
      *
-     * @return Model Le modèle.
+     * @return \Joomla\View\ViewInterface L'objet View
      *
      * @throws \RuntimeException
      */
-    protected function getModel($model = null, $ignore_request = false) {
+    protected function initializeView($view = null) {
 
-        if (!isset($model) && isset($this->defaultModel)) {
-            $model = ucfirst($this->defaultModel);
-        } elseif (!isset($model)) {
-            throw new \RuntimeException("Unable to find a model", 500);
+        if (!isset($view)) {
+            $view = $this->defaultView;
         }
 
-        return Model::getInstance($model, $ignore_request);
+        // On initialise le modèle.
+        $this->initializeModel();
+
+        $class = APP_NAMESPACE . "\\View\\" . ucfirst($view) . "View";
+
+        if (!class_exists($class)) {
+            throw new \RuntimeException(sprintf("Unable to find %s view", $view), 500);
+        }
+
+        // On initialise le renderer.
+        $this->initializeRenderer();
+
+        // On instancie la vue.
+        $object = $this->getContainer()->buildObject($class);
+
+        // On définit le layout.
+        $object->setLayout($this->getLayout());
+
+        // On ajoute la vue aux recherches du chargeur du renderer.
+        $object->getRenderer()->getRenderer()->getLoader()->addPath(JPATH_TEMPLATES . '/views/' . strtolower($view));
+
+        return $object;
 
     }
 
-    public function isSSLEnabled() {
+    protected function initializeModel($model = null, $ignore_request = false) {
 
-        return $this->ssl_enabled;
+        if (!isset($name)) {
+            $name = $this->defaultModel;
+        }
+
+        $class = APP_NAMESPACE . "\\Model\\" . ucfirst($name) . "Model";
+
+        if (!class_exists($class)) {
+            throw new \RuntimeException(sprintf("Unable to find %s model (class: %s)", $name, $class), 500);
+        }
+
+        $object = new $class($this->getApplication(), $this->getContainer()->get('db'), $this->modelState, $ignore_request);
+
+        $this->getContainer()->set($class, $object)->alias('Joomla\\Model\\ModelInterface', $class);
+
+    }
+
+    /**
+     * Méthode pour initialiser le renderer.
+     *
+     * @return void
+     *
+     * @throws \RuntimeException
+     */
+    public function initializeRenderer() {
+
+        $container = $this->getContainer();
+
+        // On ajoute le renderer au container s'il n'existe pas.
+        if (!$container->exists('renderer')) {
+
+            $type = $container->get('config')->get('template.renderer');
+
+            // On définit le nom de la classe du fournisseur du service Renderer.
+            $class = 'EtdSolutions\\Service\\' . ucfirst($type) . 'RendererProvider';
+
+            // Sanity check
+            if (!class_exists($class)) {
+                throw new \RuntimeException(sprintf('Renderer provider for renderer type %s not found. (class: %s)', $type, $class));
+            }
+
+            // On enregistre notre fournisseur de service.
+            $container->registerServiceProvider(new $class($this->getApplication()));
+
+        }
+    }
+
+    /**
+     * Méthode pour instancier un modèle s'il existe.
+     *
+     * @param  string $name           Le nom du modèle.
+     * @param  bool   $ignore_request True pour ignore la requête dans l'état du modèle.
+     * @return ModelInterface
+     */
+    protected function getModel($name = null, $ignore_request = false) {
+
+        if (!isset($name)) {
+            $name = $this->defaultModel;
+        }
+
+        $class = APP_NAMESPACE . "\\Model\\" . ucfirst($name) . "Model";
+
+        if (!class_exists($class)) {
+            throw new \RuntimeException(sprintf("Unable to find %s model (class: %s)", $name, $class), 500);
+        }
+
+        return new $class($this->getApplication(), $this->getContainer()->get('db'), $this->modelState, $ignore_request);
+
     }
 
 }
