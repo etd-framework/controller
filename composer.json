@@ -23,7 +23,8 @@
     "etdsolutions/model": "@dev",
     "etdsolutions/table": "@dev",
     "etdsolutions/language": "@dev",
-    "etdsolutions/utility": "@dev"
+    "etdsolutions/utility": "@dev",
+    "etdsolutions/view": "@dev"
   },
   "autoload": {
     "psr-4": {

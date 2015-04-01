@@ -11,6 +11,7 @@ namespace EtdSolutions\Controller;
 
 use EtdSolutions\Language\LanguageFactory;
 
+use EtdSolutions\View\HtmlView;
 use Joomla\DI\ContainerAwareInterface;
 use Joomla\DI\ContainerAwareTrait;
 use Joomla\Input\Input;
@@ -315,6 +316,11 @@ class Controller extends AbstractController implements ContainerAwareInterface {
         // On instancie la vue.
         $object = $this->getContainer()->buildObject($class);
 
+        // On définit le container.
+        if ($object instanceof HtmlView) {
+            $object->setContainer($this->getContainer());
+        }
+
         // On définit le layout.
         $object->setLayout($this->getLayout());
 
@@ -338,6 +344,7 @@ class Controller extends AbstractController implements ContainerAwareInterface {
         }
 
         $object = new $class($this->getApplication(), $this->getContainer()->get('db'), $this->modelState, $ignore_request);
+        $object->setContainer($this->getContainer());
 
         $this->getContainer()->set($class, $object)->alias('Joomla\\Model\\ModelInterface', $class);
 
