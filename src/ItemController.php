@@ -445,7 +445,7 @@ class ItemController extends Controller {
         // On initialise les variables
         $app    = $this->getApplication();
         $input  = $this->getInput();
-        $text   = $app->getText();
+        $text   = (new LanguageFactory)->getText();
         $result = new \stdClass();
 
         // Bad request par défaut.
@@ -466,6 +466,14 @@ class ItemController extends Controller {
 
         // On contrôle que les données sont correctes.
         if (empty($id)) {
+            return $result;
+        }
+
+        // On contrôle les droits de modification.
+        if (!$this->allowEdit($id)) {
+            $result->message = $text->translate('APP_ERROR_UNAUTHORIZED_ACTION');
+            $result->status  = 403;
+
             return $result;
         }
 
