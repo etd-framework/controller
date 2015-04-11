@@ -124,7 +124,9 @@ class Controller extends AbstractController implements ContainerAwareInterface {
         $this->registerDefaultTask($this->defaultTask);
 
         // On détermine le modèle par défaut grâce au nom du controller.
-        $this->defaultModel = $this->getName();
+        if (empty($this->defaultModel)) {
+            $this->defaultModel = $this->getName();
+        }
 
         // Contexte
         $this->context = strtolower($this->getName());
