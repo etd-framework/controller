@@ -401,7 +401,10 @@ class Controller extends AbstractController implements ContainerAwareInterface {
             throw new \RuntimeException(sprintf("Unable to find %s model (class: %s)", $name, $class), 500);
         }
 
-        return new $class($this->getApplication(), $this->getContainer()->get('db'), $this->modelState, $ignore_request);
+        $object = new $class($this->getApplication(), $this->getContainer()->get('db'), $this->modelState, $ignore_request);
+        $object->setContainer($this->getContainer());
+
+        return $object;
 
     }
 
