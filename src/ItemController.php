@@ -668,12 +668,13 @@ class ItemController extends Controller {
         }
 
         // On récupère les données.
-        $input = $this->getInput();
-        $id    = $input->get('id', 0, 'uint');
-        $name  = $input->get('name', null, 'string');
+        $input   = $this->getInput();
+        $id      = $input->get('id', 0, 'uint');
+        $name    = $input->get('name', null, 'string');
+        $control = $input->get('control', null, 'string');
 
         // Si un des paramètres est invalide, on renvoi une erreur.
-        if (empty($id) || empty($name)) {
+        if (empty($name)) {
             return $result;
         }
 
@@ -685,6 +686,9 @@ class ItemController extends Controller {
             return $result;
         }
 
+        // On écrase les données.
+        $app->setUserState($this->context . '.edit.data', null);
+
         // On récupère le modèle.
         $model = $this->getModel();
 
@@ -693,6 +697,10 @@ class ItemController extends Controller {
          * @var \EtdSolutions\Form\Form $form
          */
         $form = $model->getForm();
+
+        if (!empty($control)) {
+            $form->setFormControl($control);
+        }
 
         // On sépare le groupe du champ si nécessaire.
         $group = null;
