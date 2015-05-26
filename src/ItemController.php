@@ -501,6 +501,71 @@ class ItemController extends Controller {
     }
 
     /**
+     * Supprime un élément en AJAX.
+     *
+     * @return bool
+     */
+    public function ajaxDelete() {
+
+        // On initialise les variables
+        $app    = $this->getApplication();
+        $input  = $this->getInput();
+        $text   = (new LanguageFactory)->getText();
+        $result = new \stdClass();
+
+        // Bad request par défaut.
+        $result->status = 400;
+        $result->error  = true;
+
+        // On contrôle le jeton de la requête.
+        if (!$app->checkToken()) {
+            $result->status  = 403;
+            $result->message = $text->translate('APP_ERROR_INVALID_TOKEN');
+
+            return $result;
+        }
+
+        // On récupère les données.
+        $id = $input->get('id', 0, 'uint');
+
+        // On contrôle que les données sont correctes.
+        if (empty($id)) {
+            return $result;
+        }
+
+        // On contrôle les droits de modification.
+        if (!$this->allowDelete($id)) {
+            $result->message = $text->translate('APP_ERROR_UNAUTHORIZED_ACTION');
+            $result->status  = 403;
+
+            return $result;
+        }
+
+        $id = array($id);
+
+        // On met à jour l'état de présence.
+        $model = $this->getModel();
+
+        if (!$model->delete($id)) {
+            $result->status = 500;
+            $error          = $model->getError();
+            if ($error instanceof \Exception) {
+                $error = $error->getMessage();
+            }
+            $result->message = $error;
+
+            return $result;
+        }
+
+        // Si on est ici c'est OK.
+        $result->status = 200;
+        $result->error  = false;
+
+        return $result;
+
+    }
+
+    /**
      * Change l'ordre d'un ou plusieurs enregistrements.
      *
      * @return  boolean  True en cas de succès.
