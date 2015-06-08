@@ -17,14 +17,16 @@
     "php": ">=5.4",
     "joomla/controller": "~1.0",
     "joomla/input": "~1.2",
-    "joomla/utilities": "~1.0",
     "joomla/di": "2.0.*@dev",
     "etdsolutions/application": "@dev",
-    "etdsolutions/model": "@dev",
-    "etdsolutions/table": "@dev",
-    "etdsolutions/language": "@dev",
-    "etdsolutions/utility": "@dev",
-    "etdsolutions/view": "@dev"
+    "etdsolutions/language": "@dev"
+  },
+  "suggest": {
+    "etdsolutions/model": "Pour utiliser les modèles",
+    "etdsolutions/view": "Pour utiliser les vues",
+    "etdsolutions/utility": "Pour utiliser RequireJS",
+    "etdsolutions/table": "Pour utiliser les tables",
+    "joomla/utilities": "Pour utiliser ArrayHelper"
   },
   "autoload": {
     "psr-4": {
