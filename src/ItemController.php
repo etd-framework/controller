@@ -82,6 +82,7 @@ class ItemController extends Controller {
         $this->registerTask('archive', 'publish');
 
         // Valeur = -2
+        // Valeur = -2
         $this->registerTask('trash', 'publish');
 
         // Valeur = -3
@@ -288,6 +289,95 @@ class ItemController extends Controller {
         $this->redirect("/" . $redirect_uri, $text->translate('CTRL_' . strtoupper($this->getName()) . '_SAVE_SUCCESS'), 'success');
 
         return true;
+
+    }
+
+    /**
+     * Méthode pour sauver un enregistrement en AJAX.
+     */
+    public function ajaxSave() {
+
+        // On initialise les variables
+        $app    = $this->getApplication();
+        $input  = $this->getInput();
+        $text   = (new LanguageFactory)->getText();
+        $result = new \stdClass();
+
+        // Bad request par défaut.
+        $result->status = 400;
+        $result->error  = true;
+
+        // On contrôle le jeton de la requête.
+        if (!$app->checkToken()) {
+            $result->status  = 403;
+            $result->message = $text->translate('APP_ERROR_INVALID_TOKEN');
+
+            return $result;
+        }
+
+        $data     = $input->get('etdform', array(), 'array');
+        $recordId = (int)$data['id'];
+
+        // On contrôle les droits de modification.
+        if (!$this->allowSave($recordId)) {
+            $result->message = $text->translate('APP_ERROR_UNAUTHORIZED_ACTION');
+            $result->status  = 403;
+
+            return $result;
+        }
+
+        /**
+         * @var ItemModel $model
+         */
+        $model    = $this->getModel();
+
+        $this->beforeSave($model, $data);
+
+        // On filtre les données
+        $data = $model->filter($data);
+
+        // On valide les données.
+        $valid = $model->validate($data);
+
+        if ($valid === false) {
+
+            // On récupère les messages de validation.
+            $errors = array();
+
+            foreach ($model->getErrors() as $error) {
+                if ($error instanceof \Exception) {
+                    $errors[] = $error->getMessage();
+                } else {
+                    $errors[] = $error;
+                }
+            }
+
+            $result->status  = 400;
+            $result->message = implode("<br>", $errors);
+
+            return $result;
+        }
+
+        if (!$model->save($data)) {
+            $result->status = 400;
+            $error          = $model->getError();
+            if ($error instanceof \Exception) {
+                $error = $error->getMessage();
+            }
+            $result->message = $text->sprintf('APP_ERROR_CTRL_SAVE_FAILED', $error);
+
+            return $result;
+        }
+
+        // On invoque la méthode afterSave pour permettre aux contrôleurs enfants d'accéder au modèle.
+        $this->afterSave($model, $data);
+
+        // Si on est ici c'est OK.
+        $result->status = 200;
+        $result->error  = false;
+        $result->item   = $model->getItem();
+
+        return $result;
 
     }
 
