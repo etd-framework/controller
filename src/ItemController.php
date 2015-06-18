@@ -184,11 +184,15 @@ class ItemController extends Controller {
         // On récupềre le model
         $model = $this->getModel();
 
+        $this->beforeDelete($model, $id);
+
         // On s'assure que ce sont bien des integers.
         $id = ArrayHelper::toInteger($id);
 
         // On effectue la suppression.
         if ($model->delete($id)) {
+
+            $this->afterDelete($model, $id);
 
             // La suppresion s'est faite avec succès.
             $this->redirect("/" . $this->listRoute, $text->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DELETED', count($id)), 'success');
@@ -636,6 +640,8 @@ class ItemController extends Controller {
         // On met à jour l'état de présence.
         $model = $this->getModel();
 
+        $this->beforeDelete($model, $id);
+
         if (!$model->delete($id)) {
             $result->status = 500;
             $error          = $model->getError();
@@ -646,6 +652,8 @@ class ItemController extends Controller {
 
             return $result;
         }
+
+        $this->afterDelete($model, $id);
 
         // Si on est ici c'est OK.
         $result->status = 200;
@@ -1004,6 +1012,32 @@ class ItemController extends Controller {
      * @return  void
      */
     protected function afterSave(Model &$model, $data = array()) {
+
+    }
+
+    /**
+     * Méthode qui permet aux controllers enfants d'accéder
+     * aux données et au modèle avant la suppression.
+     *
+     * @param   Model $model Le modèle.
+     * @param   int   $id    L'identifiant
+     *
+     * @return  void
+     */
+    protected function beforeDelete(Model &$model, $id) {
+
+    }
+
+    /**
+     * Méthode qui permet aux controllers enfants d'accéder
+     * aux données et au modèle après la suppression.
+     *
+     * @param   Model $model Le modèle.
+     * @param   int   $id    L'identifiant
+     *
+     * @return  void
+     */
+    protected function afterDelete(Model &$model, $id) {
 
     }
 
