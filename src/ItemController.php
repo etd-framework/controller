@@ -127,9 +127,18 @@ class ItemController extends Controller {
         $id = $this->getInput()
                    ->get('id', null, 'array');
 
-        // Si on a aucun élément, on redirige vers la liste avec une erreur.
+        // On récupère l'URL de redirection (encodée en base 64)
+        $redirect = $this->getInput()->get('redirect_url', '', 'base64');
+
+        if (!empty($redirect)) {
+            $redirect = base64_decode($redirect);
+        } else { // Si l'URL n'est pas renseignée.
+            $redirect = "/" . $this->listRoute; // On redirige vers la liste
+        }
+
+        // Si on a aucun élément, on redirige avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, (new LanguageFactory)->getText()->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect($redirect, (new LanguageFactory)->getText()->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -143,7 +152,7 @@ class ItemController extends Controller {
 
         // On contrôle les droits.
         if (!$this->allowEdit($id)) {
-            $this->redirect("/" . $this->listRoute, (new LanguageFactory)->getText()->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
+            $this->redirect($redirect, (new LanguageFactory)->getText()->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
         }
 
         // On passe en layout de création (form).
@@ -174,9 +183,18 @@ class ItemController extends Controller {
         $id = $this->getInput()
                    ->get('id', null, 'array');
 
-        // Si on a aucun élément, on redirige vers la liste avec une erreur.
+        // On récupère l'URL de redirection (encodée en base 64)
+        $redirect = $this->getInput()->get('redirect_url', '', 'base64');
+
+        if (!empty($redirect)) {
+            $redirect = base64_decode($redirect);
+        } else { // Si l'URL n'est pas renseignée.
+            $redirect = "/" . $this->listRoute; // On redirige vers la liste
+        }
+
+        // Si on a aucun élément, on redirige avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, $text->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect($redirect, $text->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -195,12 +213,12 @@ class ItemController extends Controller {
             $this->afterDelete($model, $id);
 
             // La suppresion s'est faite avec succès.
-            $this->redirect("/" . $this->listRoute, $text->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DELETED', count($id)), 'success');
+            $this->redirect($redirect, $text->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DELETED', count($id)), 'success');
 
         } else {
 
             // Une erreur s'est produite.
-            $this->redirect("/" . $this->listRoute, $model->getError(), 'error');
+            $this->redirect($redirect, $model->getError(), 'error');
         }
 
         return true;
@@ -221,17 +239,23 @@ class ItemController extends Controller {
             $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN', 403));
         }
 
-        /**
-         * @var ItemModel $model
-         */
         $model    = $this->getModel();
         $input    = $this->getInput();
         $data     = $input->get('etdform', array(), 'array');
         $recordId = (int)$data['id'];
 
+        // On récupère l'URL de redirection (encodée en base 64)
+        $redirect = $this->getInput()->get('redirect_url', '', 'base64');
+
+        if (!empty($redirect)) {
+            $redirect = base64_decode($redirect);
+        } else { // Si l'URL n'est pas renseignée.
+            $redirect = "/" . $this->listRoute; // On redirige vers la liste
+        }
+
         // Contrôle d'accès.
         if (!$this->allowSave($recordId)) {
-            $this->redirect("/" . $this->listRoute, $text->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
+            $this->redirect($redirect, $text->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
 
             return false;
         }
@@ -287,10 +311,10 @@ class ItemController extends Controller {
         $app->setUserState($this->context . '.edit.data', null);
 
         // On définit la bonne page suivant la tâche.
-        $redirect_uri = ($this->task == 'saveAndNew') ? $this->itemRoute . $this->getRedirectToItemAppend() : $this->listRoute;
+        $redirect_uri = ($this->task == 'saveAndNew') ? "/" . $this->itemRoute . $this->getRedirectToItemAppend() : $redirect;
 
         // On redirige vers la bonne page.
-        $this->redirect("/" . $redirect_uri, $text->translate('CTRL_' . strtoupper($this->getName()) . '_SAVE_SUCCESS'), 'success');
+        $this->redirect($redirect_uri, $text->translate('CTRL_' . strtoupper($this->getName()) . '_SAVE_SUCCESS'), 'success');
 
         return true;
 
@@ -438,9 +462,18 @@ class ItemController extends Controller {
         $id    = $this->getInput()
                       ->get('id', array(), 'array');
 
-        // Si on a aucun élément, on redirige vers la liste avec une erreur.
+        // On récupère l'URL de redirection (encodée en base 64)
+        $redirect = $this->getInput()->get('redirect_url', '', 'base64');
+
+        if (!empty($redirect)) {
+            $redirect = base64_decode($redirect);
+        } else { // Si l'URL n'est pas renseignée.
+            $redirect = "/" . $this->listRoute; // On redirige vers la liste
+        }
+
+        // Si on a aucun élément, on redirige avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, $text->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect($redirect, $text->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -452,12 +485,12 @@ class ItemController extends Controller {
         if ($model->duplicate($id)) {
 
             // La suppresion s'est faite avec succès.
-            $this->redirect("/" . $this->listRoute, $text->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DUPLICATED', count($id)), 'success');
+            $this->redirect($redirect, $text->plural('CTRL_' . strtoupper($this->getName()) . '_N_ITEMS_DUPLICATED', count($id)), 'success');
 
         } else {
 
             // Une erreur s'est produite.
-            $this->redirect("/" . $this->listRoute, $model->getError(), 'error');
+            $this->redirect($redirect, $model->getError(), 'error');
         }
 
         return true;
@@ -484,9 +517,18 @@ class ItemController extends Controller {
         $id    = $this->getInput()
                       ->get('id', array(), 'array');
 
-        // Si on a aucun élément, on redirige vers la liste avec une erreur.
+        // On récupère l'URL de redirection (encodée en base 64)
+        $redirect = $this->getInput()->get('redirect_url', '', 'base64');
+
+        if (!empty($redirect)) {
+            $redirect = base64_decode($redirect);
+        } else { // Si l'URL n'est pas renseignée.
+            $redirect = "/" . $this->listRoute; // On redirige vers la liste
+        }
+
+        // Si on a aucun élément, on redirige avec une erreur.
         if (!is_array($id) || count($id) < 1) {
-            $this->redirect("/" . $this->listRoute, $text->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
+            $this->redirect($redirect, $text->translate('CTRL_' . strtoupper($this->getName()) . '_NO_ITEM_SELECTED'), 'warning');
 
             return false;
         }
@@ -520,12 +562,12 @@ class ItemController extends Controller {
                 $ntext .= '_N_ITEMS_TRASHED';
             }
 
-            $this->redirect("/" . $this->listRoute, $text->plural($ntext, count($id)), 'success');
+            $this->redirect($redirect, $text->plural($ntext, count($id)), 'success');
 
         } else {
 
             // Une erreur s'est produite.
-            $this->redirect("/" . $this->listRoute, $model->getError(), 'error');
+            $this->redirect($redirect, $model->getError(), 'error');
 
             return false;
         }
@@ -683,17 +725,26 @@ class ItemController extends Controller {
                     ->get('cid', array(), 'array');
         $inc = ($this->task == 'orderup') ? -1 : 1;
 
+        // On récupère l'URL de redirection (encodée en base 64)
+        $redirect = $this->getInput()->get('redirect_url', '', 'base64');
+
+        if (!empty($redirect)) {
+            $redirect = base64_decode($redirect);
+        } else { // Si l'URL n'est pas renseignée.
+            $redirect = "/" . $this->listRoute; // On redirige vers la liste
+        }
+
         $model  = $this->getModel();
         $return = $model->reorder($ids, $inc);
 
         if ($return === false) {
             // Reorder failed.
-            $this->redirect("/" . $this->listRoute, $text->translate('CTRL_' . strtoupper($this->getName()) . '_REORDER_FAILED'), 'error');
+            $this->redirect($redirect, $text->translate('CTRL_' . strtoupper($this->getName()) . '_REORDER_FAILED'), 'error');
 
             return false;
         } else {
             // Reorder succeeded.
-            $this->redirect("/" . $this->listRoute, $text->translate('CTRL_' . strtoupper($this->getName()) . '_ITEM_REORDERED'), 'success');
+            $this->redirect($redirect, $text->translate('CTRL_' . strtoupper($this->getName()) . '_ITEM_REORDERED'), 'success');
 
             return true;
         }
