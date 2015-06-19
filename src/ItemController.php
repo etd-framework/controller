@@ -199,6 +199,12 @@ class ItemController extends Controller {
             return false;
         }
 
+        if (!$this->allowDelete($id)) {
+            $this->redirect($redirect, $text->translate('APP_ERROR_UNAUTHORIZED_ACTION'), 'error');
+
+            return false;
+        }
+
         // On récupềre le model
         $model = $this->getModel();
 
