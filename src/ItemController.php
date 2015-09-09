@@ -176,7 +176,7 @@ class ItemController extends Controller {
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN'), 403);
         }
 
         // On récupère les identifiants
@@ -242,7 +242,7 @@ class ItemController extends Controller {
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN'), 403);
         }
 
         $model    = $this->getModel();
@@ -461,7 +461,7 @@ class ItemController extends Controller {
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN'), 403);
         }
 
         $model = $this->getModel();
@@ -516,7 +516,7 @@ class ItemController extends Controller {
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN'), 403);
         }
 
         $model = $this->getModel();
@@ -724,7 +724,7 @@ class ItemController extends Controller {
 
         // On contrôle le jeton de la requête.
         if (!$app->checkToken()) {
-            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN', 403));
+            $app->raiseError($text->translate('APP_ERROR_INVALID_TOKEN'), 403);
         }
 
         $ids = $this->getInput()
