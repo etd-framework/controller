@@ -248,7 +248,7 @@ class ItemController extends Controller {
         $model    = $this->getModel();
         $input    = $this->getInput();
         $data     = $input->get('etdform', array(), 'array');
-        $recordId = (int)$data['id'];
+        $recordId = isset($data['id']) ? (int)$data['id'] : 0;
 
         // On récupère l'URL de redirection (encodée en base 64)
         $redirect = $this->getInput()->get('redirect_url', '', 'base64');
