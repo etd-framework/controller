@@ -327,6 +327,59 @@ class ItemController extends Controller {
     }
 
     /**
+     * Méthode pour charger un enregistrement en AJAX.
+     */
+    public function ajaxLoad() {
+
+        // On initialise les variables
+        $app    = $this->getApplication();
+        $input  = $this->getInput();
+        $text   = (new LanguageFactory)->getText();
+        $result = new \stdClass();
+
+        // Bad request par défaut.
+        $result->status = 400;
+        $result->error  = true;
+
+        // On contrôle le jeton de la requête.
+        if (!$app->checkToken()) {
+            $result->status  = 403;
+            $result->message = $text->translate('APP_ERROR_INVALID_TOKEN');
+
+            return $result;
+        }
+
+        // On récupère les données.
+        $id = $input->get('id', 0, 'uint');
+
+        // On contrôle que les données sont correctes.
+        if (empty($id)) {
+            return $result;
+        }
+
+        // On contrôle les droits de modification.
+        if (!$this->allowView($id)) {
+            $result->message = $text->translate('APP_ERROR_UNAUTHORIZED_ACTION');
+            $result->status  = 403;
+
+            return $result;
+        }
+
+        /**
+         * @var ItemModel $model
+         */
+        $model    = $this->getModel();
+
+        // Si on est ici c'est OK.
+        $result->status = 200;
+        $result->error  = false;
+        $result->item   = $model->getItem();
+
+        return $result;
+
+    }
+
+    /**
      * Méthode pour sauver un enregistrement en AJAX.
      */
     public function ajaxSave() {
@@ -668,7 +721,7 @@ class ItemController extends Controller {
         }
 
         // On récupère les données.
-        $id = $input->get('id', 0, 'uint');
+        $id = $input->get('id', [], 'array');
 
         // On contrôle que les données sont correctes.
         if (empty($id)) {
@@ -683,11 +736,10 @@ class ItemController extends Controller {
             return $result;
         }
 
-        $id = array($id);
-
         // On met à jour l'état de présence.
         $model = $this->getModel();
 
+        ArrayHelper::toInteger($id);
         $this->beforeDelete($model, $id);
 
         if (!$model->delete($id)) {
