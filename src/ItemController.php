@@ -473,11 +473,14 @@ class ItemController extends Controller {
      */
     public function cancel() {
 
+        // On récupère l'URL de redirection (encodée en base 64)
+        $redirect = $this->getInput()->get('redirect_url', '', 'base64');
+
         // On nettoie les informations d'édition de l'enregistrement dans la session.
         $this->getApplication()->setUserState($this->context . '.edit.data', null);
 
         // On redirige vers la liste.
-        $this->redirect("/" . $this->listRoute);
+        $this->redirect(!empty($redirect) ? base64_decode($redirect) : "/" . $this->listRoute);
 
     }
 
