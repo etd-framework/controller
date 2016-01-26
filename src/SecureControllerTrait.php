@@ -24,7 +24,7 @@ trait SecureControllerTrait {
         $redirect_url = "/login?redirect_url=" . base64_encode($current_uri);
 
         // Si la session a expirée.
-        if ($session->getState() == 'expired') {
+        if ($session->getState() == 'expired' && !$session->get('from_cookie', false)) {
             $redirect_url .= "&expired=1";
             $this->redirect($redirect_url, $text->sprintf('APP_ERROR_EXPIRED_SESSION', $app->get('session_expire')), 'error');
             return true;
