@@ -2,7 +2,7 @@
 /**
  * Part of the ETD Framework Controller Package
  *
- * @copyright   Copyright (C) 2015 ETD Solutions, SARL Etudoo. Tous droits réservés.
+ * @copyright   Copyright (C) 2015 - 2016 ETD Solutions. Tous droits réservés.
  * @license     Apache License 2.0; see LICENSE
  * @author      ETD Solutions http://etd-solutions.com
  */

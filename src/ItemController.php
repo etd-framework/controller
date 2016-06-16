@@ -2,7 +2,7 @@
 /**
  * Part of the ETD Framework Controller Package
  *
- * @copyright   Copyright (C) 2015 ETD Solutions, SARL Etudoo. Tous droits réservés.
+ * @copyright   Copyright (C) 2015 - 2016 ETD Solutions. Tous droits réservés.
  * @license     Apache License 2.0; see LICENSE
  * @author      ETD Solutions http://etd-solutions.com
  */
@@ -403,7 +403,7 @@ class ItemController extends Controller {
         }
 
         $data     = $input->get('etdform', array(), 'array');
-        $recordId = (int)$data['id'];
+        $recordId = isset($data['id']) ? (int)$data['id'] : 0;
 
         // On contrôle les droits de modification.
         if (!$this->allowSave($recordId)) {
