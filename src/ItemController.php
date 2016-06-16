@@ -1172,7 +1172,13 @@ class ItemController extends Controller {
             throw new \RuntimeException(sprintf("Unable to find %s table (class: %s)", $name, $class), 500);
         }
 
-        return new $class($this->getContainer()->get('db'));
+        $instance = new $class($this->getContainer()->get('db'));
+
+        if (in_array("Joomla\\DI\\ContainerAwareInterface", class_implements($instance))) {
+            $instance->setContainer($this->getContainer());
+        }
+
+        return $instance;
     }
 
 }
