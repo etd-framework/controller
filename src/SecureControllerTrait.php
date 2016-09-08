@@ -31,6 +31,7 @@ trait SecureControllerTrait {
 
         // Si l'utilisateur n'est pas connecté.
         if ($user->isGuest()) {
+            $redirect_url .= "&isGuest=1";
             return $this->redirect($redirect_url, $text->translate('APP_ERROR_MUST_BE_LOGGED'), 'error');
         }
 

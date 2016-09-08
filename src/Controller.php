@@ -18,6 +18,7 @@ use Joomla\Input\Input;
 use Joomla\Application\AbstractApplication;
 use Joomla\Controller\AbstractController;
 use Joomla\Model\ModelInterface;
+use Joomla\Profiler\ProfilerInterface;
 
 /**
  * Controller de base
