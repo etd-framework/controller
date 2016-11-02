@@ -440,7 +440,7 @@ class ItemController extends Controller {
             }
 
             $result->status  = 400;
-            $result->message = implode("<br>", $errors);
+            $result->message = implode("\n", $errors);
 
             return $result;
         }
