@@ -8,7 +8,7 @@
  */
 
 namespace EtdSolutions\Controller;
-
+;
 use EtdSolutions\Language\LanguageFactory;
 use EtdSolutions\Model\ItemModel;
 use EtdSolutions\Model\Model;
@@ -432,10 +432,18 @@ class ItemController extends Controller {
             $errors = array();
 
             foreach ($model->getErrors() as $error) {
+
                 if ($error instanceof \Exception) {
                     $errors[] = $error->getMessage();
                 } else {
                     $errors[] = $error;
+                }
+
+                if ($error instanceof \EtdSolutions\Form\Exception\InvalidFieldException) {
+                    $result->fields[] = [
+                        "field" => $error->getField(),
+                        "group" => $error->getGroup()
+                    ];
                 }
             }
 
