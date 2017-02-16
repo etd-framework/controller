@@ -464,6 +464,9 @@ class ItemController extends Controller {
             return $result;
         }
 
+        // On efface les données
+        $app->setUserState($this->context . '.edit.data', null);
+
         // On invoque la méthode afterSave pour permettre aux contrôleurs enfants d'accéder au modèle.
         $this->afterSave($model, $data);
 
