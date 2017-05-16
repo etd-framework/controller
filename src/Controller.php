@@ -349,7 +349,7 @@ class Controller extends AbstractController implements ContainerAwareInterface {
         $object = new $class($this->getApplication(), $this->getContainer()->get('db'), $this->modelState, $ignore_request);
         $object->setContainer($this->getContainer());
 
-        $this->getContainer()->set($class, $object)->alias('Joomla\\Model\\ModelInterface', $class);
+        $this->getContainer()->set($class, $object)->alias('EtdSolutions\\Model\\ModelInterface', $class);
 
     }
 
