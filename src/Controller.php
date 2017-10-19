@@ -92,10 +92,6 @@ class Controller extends AbstractController implements ContainerAwareInterface {
 
         parent::__construct($input, $app);
 
-        // On charge le fichier de langue pour le controller.
-        $factory = new LanguageFactory();
-        $factory->getLanguage()->load(strtolower($this->getName()));
-
         // Le nom de la vue par défaut est pris sur celui du controller.
         $this->defaultView = $this->getName();
 
@@ -144,6 +140,10 @@ class Controller extends AbstractController implements ContainerAwareInterface {
      * @throws  \RuntimeException
      */
     public function execute() {
+
+	    // On charge le fichier de langue pour le controller.
+	    $factory = $this->getContainer()->get('language');
+	    $factory->getLanguage()->load(strtolower($this->getName()));
 
         $this->task = $this->getInput()
                            ->get('task', $this->defaultTask);
