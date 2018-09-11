@@ -16,7 +16,7 @@
   "require": {
     "php": ">=7.0",
     "joomla/controller": "~2.0@dev",
-    "joomla/input": "~2.0@dev",
+    "joomla/input": "~2.0@dev|~1.0",
     "joomla/di": "2.0.*@dev",
     "etdsolutions/application": "@dev",
     "etdsolutions/language": "@dev"
