@@ -323,7 +323,7 @@ class ItemController extends Controller {
         if ($this->task == 'saveAndNew') {
             $redirect_uri = "/" . $this->itemRoute . $this->getRedirectToItemAppend();
         } elseif ($this->task == 'apply') {
-            $redirect_uri = "/" . $this->itemRoute . $this->getRedirectToItemAppend($recordId);
+            $redirect_uri = "/" . $this->itemRoute . $this->getRedirectToItemAppend($model->get($this->context.'.id'));
             if (!empty($this->getInput()->get('redirect_url', '', 'base64'))) {
                 $redirect_uri .= "?redirect_url=" . base64_encode($redirect);
             }
