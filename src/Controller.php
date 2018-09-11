@@ -85,8 +85,9 @@ class Controller extends AbstractController implements ContainerAwareInterface {
     /**
      * Instancie le controller.
      *
-     * @param   Input               $input The input object.
-     * @param   AbstractApplication $app   The application object.
+     * @param   Input $input The input object.
+     * @param   AbstractApplication $app The application object.
+     * @throws \ReflectionException
      */
     public function __construct(Input $input = null, AbstractApplication $app = null) {
 
