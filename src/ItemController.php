@@ -94,6 +94,9 @@ class ItemController extends Controller {
 
         // Enregistrer & Nouveau
         $this->registerTask('saveAndNew', 'save');
+
+        // Appliquer
+        $this->registerTask('apply', 'save');
     }
 
     /**
@@ -317,7 +320,16 @@ class ItemController extends Controller {
         $app->setUserState($this->context . '.edit.data', null);
 
         // On définit la bonne page suivant la tâche.
-        $redirect_uri = ($this->task == 'saveAndNew') ? "/" . $this->itemRoute . $this->getRedirectToItemAppend() : $redirect;
+        if ($this->task == 'saveAndNew') {
+            $redirect_uri = "/" . $this->itemRoute . $this->getRedirectToItemAppend();
+        } elseif ($this->task == 'apply') {
+            $redirect_uri = "/" . $this->itemRoute . $this->getRedirectToItemAppend($recordId);
+            if (!empty($this->getInput()->get('redirect_url', '', 'base64'))) {
+                $redirect_uri .= "?redirect_url=" . base64_encode($redirect);
+            }
+        } else {
+            $redirect_uri = $redirect;
+        }
 
         // On redirige vers la bonne page.
         $this->redirect($redirect_uri, $text->translate('CTRL_' . strtoupper($this->getName()) . '_SAVE_SUCCESS'), 'success');
